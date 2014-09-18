@@ -13,11 +13,9 @@ def train_data(data):
     #Need to transform feature vector into something recognized by scikit learn
     #try to keep it a sparse vector so that memory utilization is low. Can we
     #do feature hashing? (what is it and how will it help?)
-    print labels
-    vec = DictVectorizer()
-    vec.fit_transform(records, labels)
-    print vec
-    #model = libsvm.fit(records, labels)
 
-    #print model
-    return None
+    vec = DictVectorizer()
+    X = vec.fit_transform(records)
+    model = libsvm.fit(X.toarray(), array(labels, dtype='float64'))
+
+    return model
