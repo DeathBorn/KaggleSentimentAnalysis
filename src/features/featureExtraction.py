@@ -3,22 +3,20 @@ from nltk.corpus import stopwords
 from collections import defaultdict
 from src.utils.sentiwordnet import SentiWordNetCorpusReader, SentiSynset
 import sys
+import os
 
 __author__ = 'Jasneet Sabharwal'
 
-POS_TAGGER = POSTagger('/Users/KonceptGeek/Documents/Projects/Kaggle'
-                       '/SentimentAnalysis/lib/english-bidirectional-distsim'
-                       '.tagger',
-                       '/Users/KonceptGeek/Documents/Projects/Kaggle'
-                       '/SentimentAnalysis/lib/stanford-postagger.jar')
-SENTI_WORDNET = SentiWordNetCorpusReader('/Users/KonceptGeek/Documents/'
-                                         'Projects/Kaggle/SentimentAnalysis/'
-                                         'lib/SentiWordNet_3.0.0_20130122.txt')
+_POS_TAGGER_MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'lib/english-bidirectional-distsim.tagger')
+_POS_TAGGER_JAR_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'lib/stanford-postagger.jar')
+_SENTI_WORDNET_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'lib/SentiWordNet_3.0.0_20130122.txt')
+
+POS_TAGGER = POSTagger(_POS_TAGGER_MODEL_PATH, _POS_TAGGER_JAR_PATH)
+SENTI_WORDNET = SentiWordNetCorpusReader(_SENTI_WORDNET_FILE_PATH)
 
 
-def _pos_features(tokens):
-    pos_tags = POS_TAGGER.tag(tokens)
-    pos_tags = [(word,tag) for (word,tag) in pos_tags if not word in
+def _pos_features(pos_tags):
+    pos_tags = [(word, tag) for (word, tag) in pos_tags if not word.lower() in
                 stopwords.words('english')]
     features = defaultdict(int)
     for (word, tag) in pos_tags:
@@ -33,7 +31,17 @@ def _pos_features(tokens):
     return features
 
 
+def _tag_records(allTokens):
+    pos_tags = POS_TAGGER.batch_tag(allTokens)
+    return pos_tags
 
-def extract_features(tokens):
-    features = _pos_features(tokens)
-    return features
+
+def extract_features(allTokens):
+    print "TAGGING DATA"
+    allPosTags = _tag_records(allTokens)
+    result = []
+    print "EXTRACTING FEATURES FROM TAGGED DATA"
+    for posTag in allPosTags:
+        features = _pos_features(posTag)
+        result.append(features)
+    return result
