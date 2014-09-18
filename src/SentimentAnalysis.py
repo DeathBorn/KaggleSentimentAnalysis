@@ -35,8 +35,7 @@ def classify_data(data):
 
 def main(train):
     data = utils.load_train_data(
-        '/Users/KonceptGeek/Documents/Projects/Kaggle/SentimentAnalysis/data'
-        '/train.tsv')[:2]
+        '../../data/train.tsv')[:2]
 
     print "PRE-PROCESSING DATA"
     data = pre_process_data(data)

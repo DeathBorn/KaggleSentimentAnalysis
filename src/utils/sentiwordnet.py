@@ -106,7 +106,7 @@ if __name__ == "__main__":
     and the file is in this directory, send all of the SentiSynSet
     name, pos_score, neg_score trios to standard output.
     """
-    SWN_FILENAME = "/Users/KonceptGeek/Documents/Projects/Kaggle/SentimentAnalysis/lib/SentiWordNet_3.0.0_20130122.txt"
+    SWN_FILENAME = "../../lib/SentiWordNet_3.0.0_20130122.txt"
     if os.path.exists(SWN_FILENAME):
         swn = SentiWordNetCorpusReader(SWN_FILENAME)
         for senti_synset in swn.all_senti_synsets():

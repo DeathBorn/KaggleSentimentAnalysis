@@ -31,5 +31,4 @@ def save_classification(data, filename):
 
 
 if __name__ == '__main__':
-    print len(load_train_data('/Users/KonceptGeek/Documents/Projects/Kaggle'
-                          '/SentimentAnalysis/data/train.tsv'))
+    print len(load_train_data('../../data/train.tsv'))
