@@ -1,3 +1,5 @@
+from sklearn.externals import joblib
+
 __author__ = 'Jasneet Sabharwal'
 
 
@@ -14,7 +16,7 @@ def load_train_data(file_name):
                     data.append({'PhraseId': linesplit[0],
                                 'SentenceId': linesplit[1],
                                 'Phrase': linesplit[2],
-                                'Sentiment': linesplit[3]})
+                                'Sentiment': int(linesplit[3])})
     return data
 
 
@@ -23,8 +25,12 @@ def load_test_data(filename):
 
 
 def save_model(model, filename):
-    pass
+    joblib.dump(model, filename)
 
+
+def load_model(filename):
+    model = joblib.load(filename)
+    return model
 
 def save_classification(data, filename):
     pass
