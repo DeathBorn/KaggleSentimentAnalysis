@@ -21,11 +21,11 @@ def extract_features_data(data):
     :return:
     """
     allPreProcessedTokens = [record['preProcessed'] for record in data]
-    allFeatures = featureExtraction.extract_features(allPreProcessedTokens)
+    featureMatrix = featureExtraction.extract_features(allPreProcessedTokens)
 
-    for (record, features) in zip(data, allFeatures):
-        record['features'] = features
-    return data
+    #for (record, features) in zip(data, allFeatures):
+    #    record['features'] = features
+    return featureMatrix
 
 
 def pre_process_data(data):
@@ -34,8 +34,8 @@ def pre_process_data(data):
     return data
 
 
-def perform_training(data):
-    model = training.train_data(data)
+def perform_training(featureMatrix, data):
+    model = training.train_data(featureMatrix, [record['Sentiment'] for record in data])
     return model
 
 
@@ -55,11 +55,11 @@ def main(train, filePath, outFilePath):
     data = pre_process_data(data)
 
     print "EXTRACTING FEATURES"
-    data = extract_features_data(data)
+    featureMatrix = extract_features_data(data)
 
     if train:
         print 'TRAINING MODEL'
-        model = perform_training(data)
+        model = perform_training(featureMatrix, data)
         utils.save_model(model, _MODEL_PATH)
     else:
         print "CLASSIFYING"
