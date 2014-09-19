@@ -1,4 +1,6 @@
 from sklearn.externals import joblib
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
 
 __author__ = 'Jasneet Sabharwal'
 
@@ -52,5 +54,19 @@ def save_classification(data, filename):
             outFile.write(record['PhraseId'] + ',' + str(record['prediction'])+'\n')
 
 
+def create_bow_vocabulary(data):
+    vec = CountVectorizer(min_df=1, binary=True, dtype='float64', lowercase=True, ngram_range=(1, 1),
+                          stop_words=stopwords.words('english'))
+    X = vec.fit_transform(data)
+    features = vec.get_feature_names()
+    return features
+
+
+def get_bow_vocab(filename):
+    bow_vocab = joblib.load(filename)
+    return bow_vocab
+
 if __name__ == '__main__':
-    print len(load_train_data('../../data/train.tsv'))
+    data = load_train_data('../../data/train.tsv')
+    bow_vocab = create_bow_vocabulary([record['Phrase'] for record in data])
+    joblib.dump(bow_vocab, '../../lib/bow_vocab')
