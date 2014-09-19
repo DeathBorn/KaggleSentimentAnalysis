@@ -10,6 +10,7 @@ __author__ = 'Jasneet Sabharwal'
 _MODEL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'model/model.svm'))
 _TRAIN_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data/train.tsv'))
 _TEST_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data/test.tsv'))
+_OUTPUT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data/output.csv'))
 
 
 def extract_features_data(data):
@@ -22,16 +23,14 @@ def extract_features_data(data):
     allPreProcessedTokens = [record['preProcessed'] for record in data]
     allFeatures = featureExtraction.extract_features(allPreProcessedTokens)
 
-    for i, (record, features) in enumerate(zip(data, allFeatures)):
+    for (record, features) in zip(data, allFeatures):
         record['features'] = features
-        data[i] = record
     return data
 
 
 def pre_process_data(data):
-    for i, record in enumerate(data):
+    for record in data:
         record['preProcessed'] = preProcess.pre_process(record['Phrase'])
-        data[i] = record
     return data
 
 
@@ -40,16 +39,17 @@ def perform_training(data):
     return model
 
 
-def classify_data(data):
+def classify_data(data, model):
     for i, record in enumerate(data):
-        record['prediction'] = classification.classify(record['features'])
-        data[i] = record
+        record['prediction'] = classification.classify(record['features'], model)
     return data
 
 
-def main(train):
-
-    data = utils.load_train_data(_TRAIN_FILE_PATH)
+def main(train, filePath, outFilePath):
+    if train:
+        data = utils.load_train_data(filePath)
+    else:
+        data = utils.load_test_data(filePath)
 
     print "PRE-PROCESSING DATA"
     data = pre_process_data(data)
@@ -62,12 +62,12 @@ def main(train):
         model = perform_training(data)
         utils.save_model(model, _MODEL_PATH)
     else:
+        print "CLASSIFYING"
         model = utils.load_model(_MODEL_PATH)
-        #data = classify_data(data)
-        #utils.save_classification(data, '')
-        pass
+        data = classify_data(data, model)
+        utils.save_classification(data, outFilePath)
 
 
 if __name__ == '__main__':
     TRAINING = True
-    main(TRAINING)
+    main(TRAINING, _TRAIN_FILE_PATH, _OUTPUT_FILE)
